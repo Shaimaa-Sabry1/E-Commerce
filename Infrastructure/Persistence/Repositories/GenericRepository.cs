@@ -47,6 +47,11 @@ namespace Persistence.Repositories
 
         }
 
+        public async Task<IEnumerable<TEntity>> GellAllAsync(ISpecifications<TEntity, TKey> specifications, bool trackChanges = false)
+        {
+          return await  SpecificationEvaluator.GetQuery(_context.Set<TEntity>(), specifications).ToListAsync();
+        }
+
         public async Task<TEntity?> GetAsync(TKey id)
         {
             if (typeof(TEntity) == typeof(Product))
@@ -54,6 +59,11 @@ namespace Persistence.Repositories
                 return await _context.Products.Include(P => P.ProductBrand).Include(P => P.ProductType).FirstOrDefaultAsync(P => P.Id == id as int?) as TEntity;
                     }
             return await _context.Set<TEntity>().FindAsync(id);
+        }
+
+        public async Task<TEntity?> GetAsync(ISpecifications<TEntity, TKey> specifications)
+        {
+            return await SpecificationEvaluator.GetQuery(_context.Set<TEntity>(), specifications).FirstOrDefaultAsync();
         }
 
         public void Update(TEntity entity)

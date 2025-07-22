@@ -24,6 +24,11 @@ namespace Persistence.Repositories
 
         }
 
+        public async Task<int> CountAsync(ISpecifications<TEntity, TKey> specifications)
+        {
+            return await ApplySpecifications(specifications).CountAsync();
+        }
+
         public void Delete(TEntity entity)
         {
             _context.Remove(entity);
@@ -69,6 +74,10 @@ namespace Persistence.Repositories
         public void Update(TEntity entity)
         {
             _context.Update(entity);
+        }
+        private IQueryable<TEntity> ApplySpecifications(ISpecifications<TEntity,TKey> specifications)
+        {
+            return SpecificationEvaluator.GetQuery(_context.Set<TEntity>(), specifications);
         }
     }
 }

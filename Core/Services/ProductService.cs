@@ -24,15 +24,18 @@ namespace Services
             return result;
         }
 
-        public async Task<IEnumerable<ProductResultDto>> GetAllProductAsync(int? brandId, int? typrId, string? sort)
+        public async Task<PaginationResponse<ProductResultDto>> GetAllProductAsync(ProductSpecificationsParamters product)
         {
-            var spec = new ProductWithBrandsAndTypeSpecifications(brandId, typrId,sort);
+            var spec = new ProductWithBrandsAndTypeSpecifications(product);
 
             //Get All Products Throught ProductRepository
             var products=await unitOfWork.GetGenericRepository<Product, int>().GellAllAsync(spec);
+
+            var specCount = new ProductWithCountSpecifications(product);
+            var count = await unitOfWork.GetGenericRepository<Product, int>().CountAsync(specCount);
             //Mapping IEnumerable<Product> to IEnumerable<ProductResultDto>:AutoMapper
            var result= mapper.Map<IEnumerable<ProductResultDto>>(products);
-            return result;
+            return new PaginationResponse<ProductResultDto>(product.PageIndex,product.PageSize,count,result);
         }
 
         public async Task<IEnumerable<TypeResultDto>> GetAllTypeAsync()

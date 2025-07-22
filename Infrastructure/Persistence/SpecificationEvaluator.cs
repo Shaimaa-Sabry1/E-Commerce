@@ -28,6 +28,10 @@ namespace Persistence
             {
                 query = query.OrderByDescending(specifications.OrderByDescending);
             }
+            if(specifications.IsPagination)
+            {
+                query = query.Skip(specifications.Skip).Take(specifications.Take);
+            }
             query = specifications.IncludeExpretion.Aggregate(query, (currentQuery, includeExpresion) => currentQuery.Include(includeExpresion));
             return query;
         }

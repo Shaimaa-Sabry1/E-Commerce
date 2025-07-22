@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,9 @@ namespace Presentation
         //endpoint :public non-static method
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProduct(int? brandId,int? typeId,string? sort)
+        public async Task<IActionResult> GetAllProduct([FromQuery]ProductSpecificationsParamters product)
         {
-          var result=await  serviceManager.ProductService.GetAllProductAsync(brandId,typeId,sort);
+          var result=await  serviceManager.ProductService.GetAllProductAsync(product);
             if (result is null) return BadRequest();
             return Ok(result);
 
